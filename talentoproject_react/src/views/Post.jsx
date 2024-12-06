@@ -248,14 +248,8 @@ export default function AdminPost() {
   return (
     <div className="container mx-auto p-6">
       <div className="flex-1 p-4 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg shadow-lg">
-        <header className="mb-6 text-center">
-          <Typography variant="h4" fontWeight="bold" sx={{ color: "#0D47A1" }}>
-            Urgent Hiring Talent!
-          </Typography>
-        </header>
-
         {/* Search Bar */}
-        <Box sx={{ textAlign: "center", marginBottom: 3 }}>
+        <Box sx={{ textAlign: "center", marginBottom: 3, marginTop: 5,}}>
           <TextField
             label="Search Posts"
             variant="outlined"

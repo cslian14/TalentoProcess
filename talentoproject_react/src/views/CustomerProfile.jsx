@@ -45,7 +45,7 @@ export default function CustomerProfile() {
           name: client.name,
           lastname: client.lastname,
           profileImage: client?.image_profile
-            ? `http://192.168.254.116:8000/storage/${client.image_profile}`
+            ? `http://192.168.254.114:8000/storage/${client.image_profile}`
             : profilePlaceholder,
           location: client.location || "Unknown Location",
           friends: client.friends || 0,
@@ -111,7 +111,7 @@ export default function CustomerProfile() {
         lastname: response.data.user.lastname,
         location: response.data.user.location,
         profileImage: response.data.user.image_profile
-          ? `http://192.168.254.116:8000/storage/${response.data.user.image_profile}`
+          ? `http://192.168.254.114:8000/storage/${response.data.user.image_profile}`
           : user.profileImage,
       });
 
@@ -132,7 +132,7 @@ export default function CustomerProfile() {
       <ToastContainer />
 
       {/* Main Profile Section */}
-      <div className="flex flex-col items-center bg-blue-100 p-4">
+      <div className="flex flex-col items-center p-4">
         <Paper className="w-full max-w-4xl bg-gray-500 shadow rounded-lg p-6 mt-10">
           {/* Profile Picture */}
           <div className="flex justify-center -mt-20 mb-4">
@@ -144,6 +144,7 @@ export default function CustomerProfile() {
                 height: 200,
                 border: "5px solid white",
                 boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                backgroundColor: "white",
               }}
             />
           </div>

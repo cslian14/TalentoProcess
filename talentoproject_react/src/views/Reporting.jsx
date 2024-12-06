@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Bar } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   BarElement,
@@ -8,20 +8,18 @@ import {
   LinearScale,
   Tooltip,
   Legend,
+  ArcElement,
 } from "chart.js";
 import axiosClient from "../axiosClient";
-import dayjs from "dayjs"; // Import day.js
-import utc from "dayjs/plugin/utc"; // Import UTC plugin
-import timezone from "dayjs/plugin/timezone"; // Import Timezone plugin
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
-// Extend dayjs to use the plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-// Set timezone to Asia/Manila
 const timezoneName = "Asia/Manila";
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement);
 
 export default function PerformerBooking() {
   const { isSidebarOpen } = useOutletContext();
@@ -37,7 +35,6 @@ export default function PerformerBooking() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch summary data from the API using axiosClient
     axiosClient
       .get("/admin/summary-report")
       .then((response) => {
@@ -49,7 +46,6 @@ export default function PerformerBooking() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Generate labels for the last 30 days (from today in Asia/Manila)
   const labels = Array.from({ length: 30 }, (_, i) => {
     return dayjs()
       .tz(timezoneName)
@@ -57,28 +53,58 @@ export default function PerformerBooking() {
       .format("MMM D");
   });
 
-  // Chart options
   const chartOptions = {
     maintainAspectRatio: false,
     responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        labels: {
+          color: "#555",
+          font: {
+            size: 12,
+            weight: "bold",
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        titleFont: { size: 14, weight: "bold" },
+        bodyFont: { size: 12 },
+        padding: 10,
+      },
+    },
     scales: {
       x: {
-        offset: false,
+        grid: { display: false },
+        ticks: { color: "#555", font: { size: 12 } },
       },
       y: {
         beginAtZero: true,
         grace: "10%",
         ticks: {
           stepSize: 1,
-          callback: function (value) {
-            if (Number.isInteger(value)) {
-              return value;
-            }
-          },
+          color: "#555",
+          font: { size: 12 },
+        },
+        grid: {
+          color: "#eaeaea",
         },
       },
     },
   };
+
+  const generateChartData = (label, data, backgroundColor) => ({
+    labels,
+    datasets: [
+      {
+        label,
+        data,
+        backgroundColor,
+      },
+    ],
+  });
 
   if (loading) {
     return <div className="text-center text-gray-600">Loading data...</div>;
@@ -92,132 +118,99 @@ export default function PerformerBooking() {
     );
   }
 
-  // Generate chart data using the summary values
-  const generateChartData = (label, data, backgroundColor) => ({
-    labels,
-    datasets: [
-      {
-        label,
-        data,
-        backgroundColor,
-      },
-    ],
-  });
+  // Summarize data
+  const totalUsers = summary.total_users[summary.total_users.length - 1];
+  const usersCreatedToday = summary.users_created_today[summary.users_created_today.length - 1];
+  const totalBookings = summary.total_bookings[summary.total_bookings.length - 1];
+  const bookingsToday = summary.bookings_today[summary.bookings_today.length - 1];
+  const cancelledBookings = summary.cancelled_bookings[summary.cancelled_bookings.length - 1];
+  const approvedBookings = summary.approved_bookings[summary.approved_bookings.length - 1];
 
-  // Data for each chart
-  const totalUsersData = generateChartData(
-    "Total Users",
-    summary.total_users,
-    "rgba(54, 162, 235, 0.6)"
-  );
+  const approvalRate = ((approvedBookings / totalBookings) * 100).toFixed(2);
+  const cancellationRate = ((cancelledBookings / totalBookings) * 100).toFixed(2);
 
+  // Data for charts
+  const totalUsersData = generateChartData("Total Users", summary.total_users, "rgba(54, 162, 235, 0.6)");
   const usersCreatedTodayData = generateChartData(
     "Users Created Today",
     summary.users_created_today,
     "rgba(255, 99, 132, 0.6)"
   );
-
   const totalBookingsData = generateChartData(
     "Total Bookings",
     summary.total_bookings,
     "rgba(75, 192, 192, 0.6)"
   );
-
   const bookingsTodayData = generateChartData(
     "Bookings Created Today",
     summary.bookings_today,
     "rgba(255, 206, 86, 0.6)"
   );
-
   const cancelledBookingsData = generateChartData(
-    "Cancelled Bookings",
+    "Cancelled Bookings Trend",
     summary.cancelled_bookings,
-    "rgba(255, 159, 64, 0.6)"
+    "rgba(255, 99, 132, 0.6)"
+  );
+  const approvedBookingsData = generateChartData(
+    "Approved Bookings Trend",
+    summary.approved_bookings,
+    "rgba(75, 192, 192, 0.6)"
   );
 
-  const approvedBookingsData = generateChartData(
-    "Approved Bookings",
-    summary.approved_bookings,
-    "rgba(153, 102, 255, 0.6)"
-  );
+  const bookingComparisonData = {
+    labels: ["Approved Bookings", "Cancelled Bookings"],
+    datasets: [
+      {
+        data: [approvedBookings, cancelledBookings],
+        backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)"],
+      },
+    ],
+  };
 
   return (
     <div className="container mx-auto p-4 md:p-6">
       <main className="flex-1 w-full">
-        <div className="px-4 py-6 sm:px-6 lg:px-8 grid grid-cols-1 gap-16">
-          {/* Metrics Summary Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Metrics Summary */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800">Total Users</h2>
-            <p className="text-gray-600 text-4xl">
-              {summary.total_users[summary.total_users.length - 1]}
-            </p>
-          </div>
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800">Users Created Today</h2>
-            <p className="text-gray-600 text-4xl">
-              {summary.users_created_today[summary.users_created_today.length - 1]}
-            </p>
-          </div>
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800">Total Bookings</h2>
-            <p className="text-gray-600 text-4xl">
-              {summary.total_bookings[summary.total_bookings.length - 1]}
-            </p>
-          </div>
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800">Bookings Created Today</h2>
-            <p className="text-gray-600 text-4xl">
-              {summary.bookings_today[summary.bookings_today.length - 1]}
-            </p>
-          </div>
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800">Cancelled Bookings</h2>
-            <p className="text-gray-600 text-4xl">
-              {summary.cancelled_bookings[summary.cancelled_bookings.length - 1]}
-            </p>
-          </div>
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800">Approved Bookings</h2>
-            <p className="text-gray-600 text-4xl">
-              {summary.approved_bookings[summary.approved_bookings.length - 1]}
-            </p>
+            <h2 className="text-xl font-semibold text-gray-800">Summary</h2>
+            <ul className="mt-4 text-gray-600 space-y-2">
+              <li>Total Users: <span className="font-bold">{totalUsers}</span></li>
+              <li>New Users Today: <span className="font-bold">{usersCreatedToday}</span></li>
+              <li>Total Bookings: <span className="font-bold">{totalBookings}</span></li>
+              <li>Bookings Today: <span className="font-bold">{bookingsToday}</span></li>
+              <li>Approval Rate: <span className="font-bold">{approvalRate}%</span></li>
+              <li>Cancellation Rate: <span className="font-bold">{cancellationRate}%</span></li>
+            </ul>
           </div>
 
-          {/* Bar Charts for Trends */}
-          <div className="bg-white shadow rounded-lg p-6 h-96 mb-16">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Total Users Trend (Last 30 Days)
-            </h2>
+          {/* Booking Breakdown */}
+          <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-800">Booking Breakdown</h2>
+            <Pie data={bookingComparisonData} />
+          </div>
+        </div>
+
+        {/* Trend Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+          <div className="bg-white shadow rounded-lg p-6 h-96">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Total Users Trend (Last 30 Days)</h2>
             <Bar data={totalUsersData} options={chartOptions} />
           </div>
-          <div className="bg-white shadow rounded-lg p-6 h-96 mb-16">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Users Created Today Trend (Last 30 Days)
-            </h2>
+          <div className="bg-white shadow rounded-lg p-6 h-96">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Users Created Today Trend (Last 30 Days)</h2>
             <Bar data={usersCreatedTodayData} options={chartOptions} />
           </div>
-          <div className="bg-white shadow rounded-lg p-6 h-96 mb-16">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Total Bookings Trend (Last 30 Days)
-            </h2>
-            <Bar data={totalBookingsData} options={chartOptions} />
-          </div>
-          <div className="bg-white shadow rounded-lg p-6 h-96 mb-16">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Bookings Created Today Trend (Last 30 Days)
-            </h2>
+          <div className="bg-white shadow rounded-lg p-6 h-96">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Bookings Created Today (Last 30 Days)</h2>
             <Bar data={bookingsTodayData} options={chartOptions} />
           </div>
-          <div className="bg-white shadow rounded-lg p-6 h-96 mb-16">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Cancelled Bookings Trend (Last 30 Days)
-            </h2>
+          <div className="bg-white shadow rounded-lg p-6 h-96">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Cancelled Bookings Trend (Last 30 Days)</h2>
             <Bar data={cancelledBookingsData} options={chartOptions} />
           </div>
-          <div className="bg-white shadow rounded-lg p-6 h-96 mb-16">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Approved Bookings Trend (Last 30 Days)
-            </h2>
+          <div className="bg-white shadow rounded-lg p-6 h-96">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Approved Bookings Trend (Last 30 Days)</h2>
             <Bar data={approvedBookingsData} options={chartOptions} />
           </div>
         </div>
@@ -225,3 +218,5 @@ export default function PerformerBooking() {
     </div>
   );
 }
+
+

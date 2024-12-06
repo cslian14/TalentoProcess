@@ -100,26 +100,23 @@ export default function ViewPortfolio() {
     }
 
     return (
-        <div className="flex flex-col h-full bg-gray-100">
+        <div className="flex flex-col h-full">
             <ToastContainer />
             <main className="flex-1 p-4 sm:p-6 w-full max-w-5xl mx-auto">
-                <header className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-6">
-                    <h1 className="text-2xl md:text-3xl font-bold">Portfolio</h1>
-                </header>
-
                 <section>
-                    <div className="bg-white shadow rounded-lg overflow-hidden">
+                    <div className="bg-gray-200 shadow rounded-lg overflow-hidden">
+                        <h2 className="text-center text-4xl font-bold mb-5 mt-3 text-black">Portfolio</h2>
                         <div className="relative">
                             <img
                                 src={profilePlaceholder}
                                 alt="Cover Photo"
-                                className="w-full h-40 md:h-48 object-cover"
+                                className="w-full h-80 md:h-48 object-cover"
                             />
                             <div className="absolute bottom-0 left-4 md:left-6 transform translate-y-1/2">
                                 <img
                                     src={
                                         performer.user?.image_profile
-                                            ? `http://192.168.1.23:8000/storage/${performer.user.image_profile}`
+                                            ? `http://192.168.254.114:8000/storage/${performer.user.image_profile}`
                                             : profilePlaceholder
                                     }
                                     alt="Profile Photo"
@@ -136,38 +133,38 @@ export default function ViewPortfolio() {
                                     <h2 className="text-xl md:text-2xl font-bold mt-8">
                                         {performer.user?.name || "Performer Name Not Available"}
                                     </h2>
-                                    <p className="text-sm text-gray-500">{performer.talent_name}</p>
+                                    <p className="text-sm text-gray-900">{performer.talent_name}</p>
                                 </div>
                             </div>
 
-                            <div className="mt-4 md:mt-6 border-t border-b border-gray-200">
+                            <div className="mt-4 md:mt-6 border-t border-b border-yellow-900">
                                 <nav className="flex overflow-x-auto space-x-4 text-center">
                                     <button
                                         onClick={() => setActiveTab("overview")}
-                                        className={`py-4 text-gray-700 font-semibold ${
+                                        className={`py-4 text-gray-900 font-semibold ${
                                             activeTab === "overview"
-                                                ? "border-b-2 border-indigo-600"
-                                                : "hover:border-b-2 hover:border-indigo-600"
+                                                ? "border-b-2 border-yellow-600"
+                                                : "hover:border-b-2 hover:border-yellow-600"
                                         }`}
                                     >
                                         Overview
                                     </button>
                                     <button
                                         onClick={() => setActiveTab("reviews")}
-                                        className={`py-4 text-gray-700 font-semibold ${
+                                        className={`py-4 text-gray-900 font-semibold ${
                                             activeTab === "reviews"
-                                                ? "border-b-2 border-indigo-600"
-                                                : "hover:border-b-2 hover:border-indigo-600"
+                                                ? "border-b-2 border-yellow-600"
+                                                : "hover:border-b-2 hover:border-yellow-600"
                                         }`}
                                     >
                                         Reviews
                                     </button>
                                     <button
                                         onClick={() => setActiveTab("media")}
-                                        className={`py-4 text-gray-700 font-semibold ${
+                                        className={`py-4 text-gray-900 font-semibold ${
                                             activeTab === "media"
-                                                ? "border-b-2 border-indigo-600"
-                                                : "hover:border-b-2 hover:border-indigo-600"
+                                                ? "border-b-2 border-yellow-600"
+                                                : "hover:border-b-2 hover:border-yellow-600"
                                         }`}
                                     >
                                         Highlights Video
@@ -181,18 +178,18 @@ export default function ViewPortfolio() {
                                         <h3 className="font-semibold text-lg">
                                             About {performer.user?.name || "Performer"}
                                         </h3>
-                                        <p className="text-gray-600">{performer.description}</p>
+                                        <p className="text-gray-800">{performer.description}</p>
                                         <div className="grid grid-cols-1 gap-2 md:grid-cols-2 mt-4">
-                                            <p className="text-sm text-gray-500">Location: {performer.location}</p>
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-sm text-gray-800">Location: {performer.location}</p>
+                                            <p className="text-sm text-gray-800">
                                                 Email: {performer.user?.email || "Email Not Available"}
                                             </p>
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-sm text-gray-800">
                                                 Phone: {performer.phone || "Phone Not Available"}
                                             </p>
-                                            <p className="text-sm text-gray-500">Experience: {performer.experience} years</p>
-                                            <p className="text-sm text-gray-500">Genres: {performer.genres}</p>
-                                            <p className="text-sm text-gray-500">Type of Performer: {performer.performer_type}</p>
+                                            <p className="text-sm text-gray-800">Experience: {performer.experience} years</p>
+                                            <p className="text-sm text-gray-800">Genres: {performer.genres}</p>
+                                            <p className="text-sm text-gray-800">Type of Performer: {performer.performer_type}</p>
                                         </div>
 
                                         <div className="flex items-center mt-2 md:mt-4">
@@ -220,7 +217,7 @@ export default function ViewPortfolio() {
                                                             <img
                                                                 src={
                                                                     review.user?.image_profile
-                                                                        ? `http://192.168.1.23:8000/storage/${review.user.image_profile}`
+                                                                        ? `http://192.168.254.114:8000/storage/${review.user.image_profile}`
                                                                         : profilePlaceholder
                                                                 }
                                                                 alt="User Profile"
@@ -290,7 +287,7 @@ export default function ViewPortfolio() {
                                                     <div key={index} className="relative group overflow-hidden rounded-lg shadow-md">
                                                         <video className="w-full h-40 object-cover rounded-lg" controls>
                                                             <source
-                                                                src={`http://192.168.1.23:8000/storage/${video.highlight_video}`}
+                                                                src={`http://192.168.254.114:8000/storage/${video.highlight_video}`}
                                                                 type="video/mp4"
                                                             />
                                                         </video>

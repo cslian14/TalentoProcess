@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-    baseURL: "http://192.168.254.107:8000/api", // Update with your machine's IP address
+    baseURL: "http://192.168.254.114:8000/api", // Update with your machine's IP address
 });
 
 axiosClient.interceptors.request.use((config) => {

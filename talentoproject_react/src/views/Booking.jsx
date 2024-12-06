@@ -347,11 +347,14 @@ export default function Booking() {
   };
 
   return (
-    <div className="p-4 bg-gray-100 min-h-screen lg:flex lg:flex-col lg:gap-6">
+    <div className="p-4 bg-yellow-300 min-h-screen lg:flex lg:flex-col lg:gap-6">
       <ToastContainer />
-
-      {/* Button to Open Calendar Modal */}
-      <div className="flex justify-end mb-4">
+      <div className="flex-grow lg:w-full mb-6 lg:mb-0">
+        <div className="mb-6">
+          <header className="mb-6">
+            <h1 className="text-2xl lg:text-3xl font-bold mb-4">Booking Requests</h1>
+          </header>
+          <div className="flex justify-start mb-4">
         <Button
           variant="contained"
           color="primary"
@@ -361,12 +364,6 @@ export default function Booking() {
           View Calendar
         </Button>
       </div>
-
-      <div className="flex-grow lg:w-full mb-6 lg:mb-0">
-        <div className="mb-6">
-          <header className="mb-6">
-            <h1 className="text-2xl lg:text-3xl font-bold mb-4">Booking Requests</h1>
-          </header>
 
           {/* Booking Requests */}
           <section className="bg-white shadow-md rounded-lg p-4 lg:p-6 mb-6 overflow-x-auto">
@@ -535,6 +532,7 @@ export default function Booking() {
               </table>
             )}
           </section>
+          <br />
 
           {/* Transaction */}
           <section className="bg-white shadow-md rounded-lg p-4 lg:p-6 mb-6 overflow-x-auto">
@@ -617,6 +615,7 @@ export default function Booking() {
             className="react-calendar"
             onClickDay={onDateClick}
           />
+          <h2 className="text-red-600"><b>Note:</b>Select a date when you are unavailable.</h2>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseCalendar} color="primary">

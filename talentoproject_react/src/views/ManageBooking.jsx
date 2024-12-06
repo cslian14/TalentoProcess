@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Chip } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css"; // Import calendar styles
-import '../index.css';
-import { useOutletContext } from "react-router-dom";
 
 // Mock data for booking requests
 const mockBookings = [
@@ -60,7 +56,6 @@ export default function ManageBooking() {
   const [bookings, setBookings] = useState(mockBookings);
   const [selectedBooking, setSelectedBooking] = useState(null); // To track selected booking for details
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Dialog open state
-  const { isSidebarOpen } = useOutletContext(); 
 
   // Open the dialog with full details of the selected booking
   const handleViewDetails = (booking) => {
@@ -73,125 +68,120 @@ export default function ManageBooking() {
     setIsDialogOpen(false);
   };
 
-  // Booking history (bookings marked as 'Done')
-  const bookingHistory = bookings.filter(
-    (booking) => booking.status === "Done"
-  );
+  // Filter bookings by status
+  const bookingHistory = bookings.filter((booking) => booking.status === "Done");
+  const rejectedBookings = bookings.filter((booking) => booking.status === "Rejected");
+  const pendingBookings = bookings.filter((booking) => booking.status === "Pending");
 
-  // Rejected bookings
-  const rejectedBookings = bookings.filter(
-    (booking) => booking.status === "Rejected"
-  );
-
-  // Convert the accepted booking dates to Date objects for Calendar
-  const acceptedDates = bookings
-    .filter((booking) => booking.status === "Accepted")
-    .map((booking) => new Date(booking.eventDate));
-
-  // Highlight the dates in the calendar for accepted bookings
-  const tileClassName = ({ date, view }) => {
-    if (view === "month") {
-      // Check if the date matches an accepted booking
-      if (acceptedDates.some((acceptedDate) => isSameDay(acceptedDate, date))) {
-        return "accepted-booking"; // Mark red for accepted bookings
-      }
-    }
-    return null; // Leave other dates unstyled
-  };
-
-  // Helper function to compare dates
-  const isSameDay = (d1, d2) => {
-    return (
-      d1.getFullYear() === d2.getFullYear() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getDate() === d2.getDate()
-    );
-  };
+  // Quick Metrics
+  const totalBookings = bookings.length;
+  const pendingCount = pendingBookings.length;
+  const acceptedCount = bookings.filter((booking) => booking.status === "Accepted").length;
+  const rejectedCount = rejectedBookings.length;
 
   return (
     <div className="container mx-auto p-6">
       <ToastContainer />
-      <div className="flex-grow mr-6">
-        {/* Booking History Section */}
-        <section className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4">Booking History</h2>
-          {bookingHistory.length === 0 ? (
-            <p>No booking history available.</p>
-          ) : (
-            <table className="min-w-full table-auto">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="px-4 py-2 text-left">Client</th>
-                  <th className="px-4 py-2 text-left">Event</th>
-                  <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-left">Location</th>
-                  <th className="px-4 py-2 text-left">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookingHistory.map((booking) => (
-                  <tr key={booking.id} className="border-b">
-                    <td className="border px-4 py-2">{booking.client}</td>
-                    <td className="border px-4 py-2">{booking.eventName}</td>
-                    <td className="border px-4 py-2">{booking.eventDate}</td>
-                    <td className="border px-4 py-2">{booking.location}</td>
-                    <td className="border px-4 py-2">
-                      <span className={`px-2 py-1 rounded-full text-white text-sm bg-green-500`}>
-                        Done
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </section>
-
-        {/* Rejected Bookings Section */}
-        <section className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4">Rejected Bookings</h2>
-          {rejectedBookings.length === 0 ? (
-            <p>No rejected bookings available.</p>
-          ) : (
-            <table className="min-w-full table-auto">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="px-4 py-2 text-left">Client</th>
-                  <th className="px-4 py-2 text-left">Event</th>
-                  <th className="px-4 py-2 text-left">Location</th>
-                  <th className="px-4 py-2 text-left">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rejectedBookings.map((booking) => (
-                  <tr key={booking.id} className="border-b">
-                    <td className="border px-4 py-2">{booking.client}</td>
-                    <td className="border px-4 py-2">{booking.eventName}</td>
-                    <td className="border px-4 py-2">{booking.location}</td>
-                    <td className="border px-4 py-2">
-                      <span className="px-2 py-1 rounded-full text-white text-sm bg-red-500">
-                        Rejected
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </section>
+      
+      {/* Metrics Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-blue-100 shadow-md rounded-lg p-4 text-center">
+          <h2 className="text-xl font-bold">Total Bookings</h2>
+          <p className="text-3xl font-semibold text-blue-600">{totalBookings}</p>
+        </div>
+        <div className="bg-yellow-100 shadow-md rounded-lg p-4 text-center">
+          <h2 className="text-xl font-bold">Pending</h2>
+          <p className="text-3xl font-semibold text-yellow-600">{pendingCount}</p>
+        </div>
+        <div className="bg-green-100 shadow-md rounded-lg p-4 text-center">
+          <h2 className="text-xl font-bold">Accepted</h2>
+          <p className="text-3xl font-semibold text-green-600">{acceptedCount}</p>
+        </div>
+        <div className="bg-red-100 shadow-md rounded-lg p-4 text-center">
+          <h2 className="text-xl font-bold">Rejected</h2>
+          <p className="text-3xl font-semibold text-red-600">{rejectedCount}</p>
+        </div>
       </div>
 
-      {/* Booking History Section with Calendar */}
-      <div className="mt-6 bg-white shadow-md rounded-lg p-6">
-        {/* Calendar Section inside Booking History */}
-        <section className="mb-6">
-          <h2 className="text-2xl font-bold mb-4">Booking Calendar</h2>
-          <Calendar
-            tileClassName={tileClassName}
-            className="react-calendar" // Apply tailwind margin if necessary
-          />
-        </section>
-      </div>
+      {/* Pending Bookings Section */}
+      <section className="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h2 className="text-2xl font-bold mb-4">Pending Bookings</h2>
+        {pendingBookings.length === 0 ? (
+          <p className="text-gray-600">No pending bookings available.</p>
+        ) : (
+          <table className="min-w-full table-auto">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-4 py-2 text-left">Client</th>
+                <th className="px-4 py-2 text-left">Event</th>
+                <th className="px-4 py-2 text-left">Date</th>
+                <th className="px-4 py-2 text-left">Location</th>
+                <th className="px-4 py-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pendingBookings.map((booking) => (
+                <tr key={booking.id} className="border-b hover:bg-gray-100">
+                  <td className="px-4 py-2">{booking.client}</td>
+                  <td className="px-4 py-2">{booking.eventName}</td>
+                  <td className="px-4 py-2">{booking.eventDate}</td>
+                  <td className="px-4 py-2">{booking.location}</td>
+                  <td className="px-4 py-2">
+                    <Button
+                      variant="contained"
+                      size="small"
+                      color="primary"
+                      onClick={() => handleViewDetails(booking)}
+                    >
+                      View Details
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* Booking History Section */}
+      <section className="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h2 className="text-2xl font-bold mb-4">Booking History</h2>
+        {bookingHistory.length === 0 ? (
+          <p className="text-gray-600">No booking history available.</p>
+        ) : (
+          <table className="min-w-full table-auto">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="px-4 py-2 text-left">Client</th>
+                <th className="px-4 py-2 text-left">Event</th>
+                <th className="px-4 py-2 text-left">Date</th>
+                <th className="px-4 py-2 text-left">Location</th>
+                <th className="px-4 py-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookingHistory.map((booking) => (
+                <tr key={booking.id} className="border-b hover:bg-gray-100">
+                  <td className="px-4 py-2">{booking.client}</td>
+                  <td className="px-4 py-2">{booking.eventName}</td>
+                  <td className="px-4 py-2">{booking.eventDate}</td>
+                  <td className="px-4 py-2">{booking.location}</td>
+                  <td className="px-4 py-2">
+                    <Button
+                      variant="contained"
+                      size="small"
+                      color="primary"
+                      onClick={() => handleViewDetails(booking)}
+                    >
+                      View Details
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
 
       {/* Dialog for viewing booking details */}
       {selectedBooking && (
@@ -211,7 +201,17 @@ export default function ManageBooking() {
               <strong>Description:</strong> {selectedBooking.description}
             </p>
             <p>
-              <strong>Status:</strong> {selectedBooking.status}
+              <strong>Status:</strong>{" "}
+              <Chip
+                label={selectedBooking.status}
+                color={
+                  selectedBooking.status === "Rejected"
+                    ? "error"
+                    : selectedBooking.status === "Accepted"
+                    ? "success"
+                    : "default"
+                }
+              />
             </p>
           </DialogContent>
           <DialogActions>
@@ -224,3 +224,5 @@ export default function ManageBooking() {
     </div>
   );
 }
+
+

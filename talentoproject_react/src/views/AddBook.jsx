@@ -247,7 +247,15 @@ export default function AddBook() {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="flex flex-col min-h-screen relative" style={{ backgroundImage: "url('/talent.png')", backgroundRepeat: "no-repeat", backgroundSize: "cover", backgroundPosition: "center" }}>
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <main
+className="flex-1 flex flex-col items-center px-4 py-12 mx-auto bg-cover bg-center relative overflow-hidden rounded-lg shadow-md"
+style={{ maxWidth: "95%" }}>
+        <div className="text-center mb-12 z-10">
+          <h2 className="text-4xl font-extrabold text-white mb-4">
+            Confirm Booking
+          </h2>
       <Box sx={{ maxWidth: 800, mx: 'auto', mt: 4 }}>
       {performers.length > 0 && performers.map((performer, index) => (
     <Card key={index} sx={{ mb: 4 }}>
@@ -255,7 +263,7 @@ export default function AddBook() {
             <Avatar
                 src={
                     performer?.image_profile
-                        ? `http://192.168.254.107:8000/storage/${performer.image_profile}`
+                        ? `http://192.168.254.114:8000/storage/${performer.image_profile}`
                         : ''
                 }
                 alt={performer?.name || ''}
@@ -293,7 +301,7 @@ export default function AddBook() {
         }}>
           {/* Event Name Select */}
           <div className="mb-4">
-            <label htmlFor="event_name" className="block text-gray-700 font-semibold mb-2">
+            <label htmlFor="event_name" className="block text-gray-100 font-semibold mb-2">
               Event Name
             </label>
             <select
@@ -301,7 +309,7 @@ export default function AddBook() {
               name="eventName"
               value={formData.eventName}
               onChange={handleInputChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md"
+              className="w-full border border-gray-900 px-3 py-2 rounded-md"
               required
             >
               <option value="">Select Event</option>
@@ -315,7 +323,7 @@ export default function AddBook() {
 
           {/* Theme Name Select */}
           <div className="mb-4">
-            <label htmlFor="theme_name" className="block text-gray-700 font-semibold mb-2">
+            <label htmlFor="theme_name" className="block text-gray-100 font-semibold mb-2">
               Theme Name
             </label>
             <select
@@ -323,7 +331,7 @@ export default function AddBook() {
               name="themeName"
               value={formData.themeName}
               onChange={handleInputChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md"
+              className="w-full border border-gray-900 px-3 py-2 rounded-md"
               required
             >
               <option value="">Select Theme</option>
@@ -337,12 +345,12 @@ export default function AddBook() {
 
           {/* Municipality and Barangay Select */}
           <div className="mb-4">
-            <label className="block text-gray-700">Select Municipality</label>
+            <label className="block text-gray-100">Select Municipality</label>
             <select
               name="municipalityName"
               value={formData.municipalityName}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded border-gray-900"
               required
             >
               <option value="">Select Municipality</option>
@@ -355,7 +363,7 @@ export default function AddBook() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700">Select Barangay</label>
+            <label className="block text-gray-100">Select Barangay</label>
             <select
               name="barangayName"
               value={formData.barangayName}
@@ -375,21 +383,26 @@ export default function AddBook() {
 
           {/* Calendar Display for Unavailable Dates and Pending Bookings */}
           <div className="mb-4">
-            <Typography variant="h6">Unavailable Dates and Pending Bookings</Typography>
+            <Typography variant="h5" className='text-white'>Unavailable Dates and Pending Bookings</Typography>
             <Calendar tileContent={tileContent} />
           </div>
 
           {/* Booking Information */}
-          <label className="block text-gray-700">Start Date: <span className="text-red-500">*</span></label>
+          <label className="block text-gray-100">Start Date: <span className="text-red-500">*</span></label>
           <TextField
-            name="startDate"
-            value={formData.startDate}
-            onChange={handleInputChange}
-            fullWidth
-            margin="normal"
-            type="date"
-          />
-          <label className="block text-gray-700">Start Time: <span className="text-red-500">*</span></label>
+  name="startDate"
+  value={formData.startDate}
+  onChange={handleInputChange}
+  fullWidth
+  margin="normal"
+  type="date"
+  sx={{
+    backgroundColor: 'white',
+    color: 'black',
+    input: { color: 'black' } // Ensures text inside the input is black
+  }}
+/>
+          <label className="block text-gray-100">Start Time: <span className="text-red-500">*</span></label>
           <TextField
             name="startTime"
             value={formData.startTime}
@@ -397,8 +410,13 @@ export default function AddBook() {
             fullWidth
             margin="normal"
             type="time"
+            sx={{
+              backgroundColor: 'white',
+              color: 'black',
+              input: { color: 'black' } // Ensures text inside the input is black
+            }}
           />
-          <label className="block text-gray-700">End Time: <span className="text-red-500">*</span></label>
+          <label className="block text-gray-100">End Time: <span className="text-red-500">*</span></label>
           <TextField
             name="endTime"
             value={formData.endTime}
@@ -406,8 +424,13 @@ export default function AddBook() {
             fullWidth
             margin="normal"
             type="time"
+            sx={{
+              backgroundColor: 'white',
+              color: 'black',
+              input: { color: 'black' } // Ensures text inside the input is black
+            }}
           />
-          <label className="block text-gray-700">Customer Notes (Optional):</label>
+          <label className="block text-gray-100">Customer Notes (Optional):</label>
           <TextField
             label="Customer Notes"
             name="customerNotes"
@@ -417,9 +440,14 @@ export default function AddBook() {
             margin="normal"
             multiline
             rows={4}
+            sx={{
+              backgroundColor: 'white',
+              color: 'black',
+              input: { color: 'black' } // Ensures text inside the input is black
+            }}
           />
-          <Box sx={{ textAlign: 'right', mt: 2 }}>
-            <Button variant="contained" color="primary" type="submit" disabled={isSubmitting}>
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Button variant="contained" color="primary" type="submit" disabled={isSubmitting} className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-full text-lg font-semibold hover:from-yellow-700 hover:to-yellow-600 transition-transform duration-300 shadow-lg transform hover:scale-105 mb-5">
               {isSubmitting ? 'Booking...' : 'Confirm Booking'}
             </Button>
           </Box>
@@ -492,6 +520,8 @@ export default function AddBook() {
 
       {/* Toast Notifications */}
       <ToastContainer />
+      </div>
+      </main>
     </div>
   );
 }

@@ -4,15 +4,17 @@ import axiosClient from "../axiosClient";
 import { useStateContext } from "../context/contextprovider";
 import Rating from "@mui/material/Rating";
 import { VolumeUp, VolumeOff, MusicNote } from "@mui/icons-material";
-import { Badge } from "@mui/material";
+import { Badge, Box, Grid, Button } from "@mui/material";
 import profile from "../assets/Ilk.jpg";
 import ChatCustomer from "./ChatCustomer";
 
 export default function Customer() {
+    const talents = ["Singer", "Dancer", "Musician", "Band", "DJ", "Others"];
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [isFilteredModalOpen, setIsFilteredModalOpen] = useState(false);
     const [isMusicNoteModalOpen, setIsMusicNoteModalOpen] = useState(false);
     const [filteredPerformers, setFilteredPerformers] = useState([]);
+    const [activeFilters, setActiveFilters] = useState([]);
     const [isMuted, setIsMuted] = useState([]);
     const [performers, setPerformers] = useState([]);
     const [events, setEvents] = useState([]);
@@ -167,10 +169,40 @@ export default function Customer() {
                     </p>
                     <button
                         onClick={handleBookNowClick}
-                        className="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white px-6 py-3 rounded-full text-lg font-semibold hover:from-indigo-700 hover:to-indigo-600 transition-transform duration-300 shadow-lg transform hover:scale-105"
+                        className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-full text-lg font-semibold hover:from-yellow-700 hover:to-yellow-600 transition-transform duration-300 shadow-lg transform hover:scale-105"
                     >
-                        Find Recommendations!
+                        Find a Talent for your event!
                     </button>
+                    <Box
+                    elevation={4}
+                    className="w-full max-w-5xl mx-auto mb-8 p-6 rounded-lg shadow-md "
+                >
+                    <Grid container spacing={3} justifyContent="center">
+                        {talents.map((talent) => (
+                            <Grid item key={talent}>
+                                <Button
+                                    variant={activeFilters.includes(talent) ? "contained" : "outlined"}
+                                    onClick={() => handleFilterChange(talent)}
+                                    sx={{
+                                        color: activeFilters.includes(talent) ? "#fff" : "#FFCC00",
+                                        backgroundColor: activeFilters.includes(talent) ? "#FFCC00" : "transparent",
+                                        borderColor: "#FFCC00",
+                                        '&:hover': {
+                                            backgroundColor: "#FFCC00",
+                                            color: "#fff",
+                                        },
+                                        borderRadius: 3,
+                                        padding: '8px 16px',
+                                        fontWeight: 'bold',
+                                        textTransform: 'capitalize',
+                                    }}
+                                >
+                                    {talent}
+                                </Button>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
                 </div>
 
                 <section ref={highlightsRef} className="w-full bg-yellow-600 py-16 px-4 z-10">
@@ -186,7 +218,7 @@ export default function Customer() {
                                         <div className="relative">
                                             <video
                                                 className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                                                src={`http://192.168.254.107:8000/storage/${performer.performer_portfolio.highlights[0].highlight_video}`}
+                                                src={`http://192.168.254.114:8000/storage/${performer.performer_portfolio.highlights[0].highlight_video}`}
                                                 autoPlay
                                                 loop
                                                 muted={isMuted[index]}
@@ -199,14 +231,14 @@ export default function Customer() {
                                                 {isMuted[index] ? <VolumeOff /> : <VolumeUp />}
                                             </button>
                                             <img
-                                                src={performer.image_profile ? `http://192.168.254.107:8000/storage/${performer.image_profile}` : profile}
+                                                src={performer.image_profile ? `http://192.168.254.114:8000/storage/${performer.image_profile}` : profile}
                                                 alt={performer.name}
                                                 className="absolute -bottom-6 left-4 w-16 h-16 rounded-full border-4 border-white object-cover transform translate-y-1/2"
                                             />
                                         </div>
                                     ) : (
                                         <img
-                                            src={performer.image_profile ? `http://192.168.254.107:8000/storage/${performer.image_profile}` : profile}
+                                            src={performer.image_profile ? `http://192.168.254.114:8000/storage/${performer.image_profile}` : profile}
                                             alt={performer.name}
                                             className="w-full h-48 object-cover"
                                         />
@@ -349,7 +381,7 @@ export default function Customer() {
                             className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md"
                         >
                             <img
-                                src={`http://192.168.254.107:8000/storage/${performer.image_profile}`}
+                                src={`http://192.168.254.114:8000/storage/${performer.image_profile}`}
                                 alt={performer.name}
                                 className="w-full h-40 object-cover"
                             />
@@ -427,7 +459,7 @@ export default function Customer() {
                             className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md"
                         >
                             <img
-                                src={`http://192.168.254.107:8000/storage/${performer.image_profile}`}
+                                src={`http://192.168.254.114:8000/storage/${performer.image_profile}`}
                                 alt={performer.name}
                                 className="w-full h-40 object-cover"
                             />

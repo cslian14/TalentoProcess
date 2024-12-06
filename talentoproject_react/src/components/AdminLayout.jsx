@@ -51,7 +51,7 @@ export default function AdminLayout() {
         return "Manage Feedback";
       case "/users":
         return "Users";
-        case "/PendingPerformers":
+      case "/PendingPerformers":
         return "Manage Performer";
       default:
         return "Talento Admin Dashboard";
@@ -82,14 +82,15 @@ export default function AdminLayout() {
 
   // Sidebar content extracted into a component for reusability
   const SidebarContent = () => (
-    <>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      {/* Header */}
       <Box sx={{ display: "flex", alignItems: "center", p: 1 }}>
         <Avatar
           src={Logo}
           alt="Talento Logo"
           sx={{
-            width: 70,
-            height: 70,
+            width: 50, // Reduced size for compact layout
+            height: 50,
             marginRight: 1,
             border: "2px solid #fff",
           }}
@@ -98,15 +99,17 @@ export default function AdminLayout() {
           variant="h6"
           fontWeight="bold"
           sx={{
-            fontSize: "1.5rem",
-            lineHeight: "2rem",
+            fontSize: "1.2rem", // Reduced font size
+            lineHeight: "1.5rem",
             flexGrow: 1,
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
           }}
         >
-          Welcome <br></br>{user ? user.role : ""} <br></br>{user ? user.name : "Guest"}!
+          Welcome <br />
+          {user ? user.role : ""} <br />
+          {user ? user.name : "Guest"}!
         </Typography>
         {isSmallScreen && (
           <IconButton onClick={toggleSidebar} sx={{ color: "white", ml: "auto" }}>
@@ -115,61 +118,109 @@ export default function AdminLayout() {
         )}
       </Box>
 
-      <List sx={{ p: 2 }}>
-        {[
-          { text: "Post", icon:<CampaignIcon />, route: "/ManagePost" },
-          { text: "Reporting", icon: <ChartBarIcon />, route: "/reports" },
-          { text: "Bookings", icon: <BriefcaseIcon />, route: "/ManageBooking" },
-          { text: "TalentoCoins", icon: <BriefcaseIcon />, route: "/CoinRequest" },
-          { text: "Feedback", icon: <UserCircleIcon />, route: "/Performers" },
-          { text: "Users", icon: <UserCircleIcon />, route: "/users" },
-          { text: "Performers", icon: <UserCircleIcon />, route: "/PendingPerformers" },
-          { text: "Log Out", icon: <PowerIcon />, action: onLogout },
-        ].map((item, index) => (
+      {/* Menu Items */}
+      <Box sx={{ flexGrow: 1, overflowY: "auto", p: 1 }}>
+        <List>
+          {[
+            { text: "Post", icon: <CampaignIcon />, route: "/ManagePost" },
+            { text: "Reporting", icon: <ChartBarIcon />, route: "/reports" },
+            { text: "Bookings", icon: <BriefcaseIcon />, route: "/ManageBooking" },
+            { text: "TalentoCoins", icon: <BriefcaseIcon />, route: "/CoinRequest" },
+            { text: "Feedback", icon: <UserCircleIcon />, route: "/Performers" },
+            { text: "Users", icon: <UserCircleIcon />, route: "/users" },
+            { text: "Performers", icon: <UserCircleIcon />, route: "/PendingPerformers" },
+          ].map((item, index) => (
+            <ListItem
+              button
+              key={index}
+              onClick={item.route ? () => navigateTo(item.route) : null}
+              sx={{
+                paddingY: 0.8, // Reduced padding for compact layout
+                paddingX: 2,
+                "&:hover": {
+                  backgroundColor: theme.palette.action.hover,
+                },
+                borderRadius: "4px",
+                marginBottom: "4px", // Reduced spacing between items
+                transition: "background-color 0.3s ease",
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  color: "white",
+                  minWidth: "30px", // Reduced size
+                  "& > *": {
+                    fontSize: "1rem", // Adjusted icon size
+                  },
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.text}
+                primaryTypographyProps={{
+                  fontSize: "0.9rem", // Adjusted font size
+                  fontWeight: "bold",
+                  color: "white",
+                }}
+              />
+            </ListItem>
+          ))}
+
+          {/* Log Out Button */}
           <ListItem
             button
-            key={index}
-            onClick={item.route ? () => navigateTo(item.route) : item.action}
+            onClick={onLogout}
             sx={{
-              paddingY: 1.5,  
-              paddingX: 2.5,
+              paddingY: 0.8,
+              paddingX: 2,
               "&:hover": {
                 backgroundColor: theme.palette.action.hover,
               },
               borderRadius: "4px",
-              marginBottom: "2px",
               transition: "background-color 0.3s ease",
+              marginTop: "4px", // Adjusted spacing
             }}
           >
             <ListItemIcon
               sx={{
                 color: "white",
-                minWidth: "32px",  // Reduced icon container width
+                minWidth: "30px",
                 "& > *": {
-                  fontSize: "1.2rem", // Reduced icon size
+                  fontSize: "1rem",
                 },
               }}
             >
-              {item.icon}
+              <PowerIcon />
             </ListItemIcon>
             <ListItemText
-              primary={item.text}
+              primary="Log Out"
               primaryTypographyProps={{
-                fontSize: "0.85rem",  // Reduced font size for more compactness
+                fontSize: "0.9rem",
                 fontWeight: "bold",
                 color: "white",
               }}
             />
           </ListItem>
-        ))}
-      </List>
-    </>
+        </List>
+      </Box>
+    </Box>
   );
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* AppBar for top navigation with burger menu */}
-      <AppBar position="fixed" sx={{ backgroundColor: theme.palette.primary.main }}>
+      <AppBar
+        position="fixed"
+        sx={{
+          background: "linear-gradient(to right, #D97706, #F59E0B)", // Gradient background
+          boxShadow: "none",
+          top: 0,
+          left: 0,
+          width: "100%",
+          zIndex: 50,
+        }}
+      >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <IconButton edge="start" color="inherit" onClick={toggleSidebar}>
             <MenuIcon />
@@ -177,7 +228,6 @@ export default function AdminLayout() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: "center" }}>
             {getPageTitle()}
           </Typography>
-          {/* Notification Component */}
           <Notification />
         </Toolbar>
       </AppBar>
@@ -190,9 +240,9 @@ export default function AdminLayout() {
           onClose={toggleSidebar}
           sx={{
             "& .MuiDrawer-paper": {
-              backgroundColor: theme.palette.primary.main,
+              background: "linear-gradient(to right, #D97706, #F59E0B)", // Matching gradient
               color: "#fff",
-              width: 250,
+              width: 180, // Reduced width
             },
           }}
         >
@@ -201,10 +251,10 @@ export default function AdminLayout() {
       ) : (
         <Box
           sx={{
-            width: isSidebarOpen ? 250 : 0,
+            width: isSidebarOpen ? 180 : 0, // Adjusted width
             transition: "width 0.3s ease",
             overflow: "hidden",
-            backgroundColor: theme.palette.primary.main,
+            background: "linear-gradient(to right, #D97706, #F59E0B)", // Matching gradient
             color: "#fff",
             position: "fixed",
             top: 0,
@@ -213,7 +263,6 @@ export default function AdminLayout() {
             paddingTop: "64px", // Height of the AppBar
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
           }}
         >
           <SidebarContent />
@@ -225,16 +274,16 @@ export default function AdminLayout() {
         component="main"
         sx={{
           flexGrow: 1,
-          marginLeft: isSidebarOpen && !isSmallScreen ? "200px" : 0,
+          marginLeft: isSidebarOpen && !isSmallScreen ? "180px" : 0,
           transition: "margin-left 0.3s ease",
           padding: 3,
         }}
       >
-        {/* Toolbar for spacing */}
         <Toolbar />
-        {/* Outlet for Nested Routes */}
         <Outlet context={{ isSidebarOpen }} />
       </Box>
     </Box>
   );
 }
+
+

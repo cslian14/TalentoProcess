@@ -334,21 +334,23 @@ export default function ClientPost() {
   };
 
   return (
-    <div className="p-4">
-      <header className="mb-4 text-center">
-        <h1 className="text-2xl font-bold mb-4">Post Your Urgent Event!</h1>
+    <div className="flex flex-col min-h-screen relative" style={{ backgroundImage: "url('/talent.png')", backgroundRepeat: "no-repeat", backgroundSize: "cover", backgroundPosition: "center" }}>
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <main
+className="flex-1 flex flex-col items-center px-4 py-12 mx-auto bg-cover bg-center relative overflow-hidden rounded-lg shadow-md"
+style={{ maxWidth: "95%" }}>
+        <div className="text-center mb-12 z-10">
+          <h2 className="text-4xl font-extrabold text-white mb-4 animate-bounce">
+            Find Events and Opportunities
+          </h2>
         {user.role === "client" && (
-          <Button
-            onClick={handleOpenForm}
-            variant="contained"
-            color="primary"
-            className="p-2"
-            sx={{ marginBottom: "16px" }}
-          >
-            Submit a Request
-          </Button>
+          <button
+          className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-full text-lg font-semibold hover:from-yellow-700 hover:to-yellow-600 transition-transform duration-300 shadow-lg transform hover:scale-105 mb-5"
+          onClick={handleOpenForm} // Trigger handleOpenForm on click
+        >
+          Post an Event
+        </button>
         )}
-      </header>
 
       {/* Search Bar */}
       <Box sx={{ textAlign: "center", marginBottom: 3 }}>
@@ -358,7 +360,7 @@ export default function ClientPost() {
           value={searchTerm}
           onChange={handleSearchChange}
           fullWidth
-          sx={{ maxWidth: 600, mx: "auto" }}
+          sx={{ maxWidth: 600, mx: "auto", bgcolor: "white", borderRadius: 3,  }}
         />
       </Box>
 
@@ -557,167 +559,216 @@ export default function ClientPost() {
         </Box>
       </Modal>
 
-      {/* Rest of the UI, displaying posts, etc */}
-      <Grid container spacing={3} className="mt-4">
-        {loading ? (
-          [1, 2, 3, 4].map((_, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-              <Skeleton variant="rectangular" width="100%" height={150} />
-            </Grid>
-          ))
-        ) : (
-          filteredPosts.map((post) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={post.id}>
-              <motion.div whileHover={{ scale: 1.05 }} className="card-wrapper">
-                <Card sx={{ marginBottom: 2 }}>
-                  <CardContent>
-                    <Box sx={{ display: "flex", alignItems: "center", marginBottom: 1, justifyContent: "space-between" }}>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                        {post.user?.image_profile ? (
+      <Grid
+  container
+  spacing={3}
+  justifyContent="center" // Centers the grid items
+  className="mt-4"
+>
+  {loading ? (
+    [1, 2, 3, 4].map((_, index) => (
+      <Grid item xs={12} key={index}> {/* Full-width skeleton */}
+        <Skeleton variant="rectangular" width="100%" height={100} />
+      </Grid>
+    ))
+  ) : (
+    filteredPosts.map((post) => (
+      <Grid item xs={12} key={post.id}> {/* Full-width posts */}
+        <motion.div whileHover={{ scale: 1.05 }} className="card-wrapper">
+          <Card
+            sx={{
+              marginBottom: 2,
+              width: "100%", // Ensures card uses full width of its grid
+              mx: "auto", // Centers the card horizontally
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Adds a subtle shadow
+              padding: 2, // Adds padding inside the card for a cleaner look
+            }}
+          >
+            <CardContent>
+              <Box
+                sx={{
+                  display: "flex",
+                  marginBottom: 1,
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  {post.user?.image_profile ? (
+                    <Avatar
+                      src={`http://192.168.254.114:8000/storage/${post.user.image_profile}`}
+                      alt={post.client_name}
+                      sx={{ marginRight: 2 }}
+                    />
+                  ) : (
+                    <Avatar sx={{ bgcolor: "#2196f3", marginRight: 2 }}>
+                      <AccountCircleIcon />
+                    </Avatar>
+                  )}
+                  <Typography variant="h6" component="div">
+                    {post.client_name}
+                  </Typography>
+                </Box>
+                {user && user.id === post.user_id && (
+                  <>
+                    <IconButton onClick={(event) => handleMenuClick(event, post)}>
+                      <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl) && selectedPost?.id === post.id}
+                      onClose={handleCloseMenu}
+                    >
+                      <MenuItem onClick={() => handleEdit(post)}>
+                        <EditIcon fontSize="small" sx={{ marginRight: 1 }} /> Edit
+                      </MenuItem>
+                      <MenuItem onClick={() => handleDelete(post.id)}>
+                        <DeleteIcon fontSize="small" sx={{ marginRight: 1 }} /> Delete
+                      </MenuItem>
+                    </Menu>
+                  </>
+                )}
+              </Box>
+
+              {/* Event Details */}
+              <Box
+                sx={{
+                  textAlign: "left", // Align all content to the left
+                  paddingLeft: 2, // Add padding to the left for spacing
+                  paddingRight: 2, // Optional padding on the right
+                }}
+              >
+                <Typography variant="body1" color="textPrimary">
+                  <strong>Event Name:</strong> {post.event_name}
+                </Typography>
+                <Typography variant="body1" color="textPrimary">
+                  <strong>Theme Name:</strong> {post.theme_name}
+                </Typography>
+                <Typography variant="body1" color="textPrimary">
+                  <strong>Location:</strong> {post.municipality_name}, {post.barangay_name}
+                </Typography>
+                <Typography variant="body1" color="textPrimary">
+                  <strong>Date:</strong> {dayjs(post.date).format("MM/DD/YYYY")}
+                </Typography>
+                <Typography variant="body1" color="textPrimary">
+                  <strong>Start Time:</strong>{" "}
+                  {dayjs(post.start_time, "HH:mm:ss").format("hh:mm A")}
+                </Typography>
+                <Typography variant="body1" color="textPrimary">
+                  <strong>End Time:</strong>{" "}
+                  {dayjs(post.end_time, "HH:mm:ss").format("hh:mm A")}
+                </Typography>
+                <Typography variant="body1" color="textPrimary">
+                  <strong>Audience:</strong> {post.audience}
+                </Typography>
+                <Typography variant="body1" color="textPrimary">
+                  <strong>Performer Needed:</strong> {post.performer_needed}
+                </Typography>
+                <Typography variant="body1" color="textPrimary">
+                  <strong>Description:</strong> {post.description}
+                </Typography>
+                <Typography variant="body1" color="textPrimary">
+                  <strong>Categories:</strong> {post.talents.join(", ")}
+                </Typography>
+              </Box>
+
+              {/* Comment Section */}
+              {user.role === "performer" && (
+                <Box sx={{ marginTop: 3 }}>
+                  <TextField
+                    fullWidth
+                    label="Add Comment"
+                    value={comments[post.id] || ""}
+                    onChange={(e) => handleCommentChange(post.id, e.target.value)}
+                    margin="normal"
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleCommentSubmit(post.id)}
+                    disabled={loading}
+                  >
+                    Submit Comment
+                  </Button>
+                </Box>
+              )}
+
+              {/* Comments Display */}
+              <Box sx={{ marginTop: 1 }}>
+                <Typography variant="h6">Comments:</Typography>
+                <Box
+                  sx={{
+                    height: 100,
+                    overflowY: "auto",
+                    marginTop: 2,
+                    padding: 1,
+                    border: "1px solid #ccc",
+                    borderRadius: 1,
+                  }}
+                >
+                  {post.comments && post.comments.length > 0 ? (
+                    post.comments.map((comment, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: 2,
+                          padding: 1,
+                          borderBottom: "1px solid #e0e0e0",
+                        }}
+                      >
+                        {comment.user?.avatar ? (
                           <Avatar
-                            src={`http://192.168.1.23:8000/storage/${post.user.image_profile}`}
-                            alt={post.client_name}
-                            sx={{ marginRight: 2 }}
+                            src={comment.user.avatar}
+                            alt={comment.user.name}
+                            sx={{ marginRight: 1 }}
                           />
                         ) : (
-                          <Avatar sx={{ bgcolor: "#2196f3", marginRight: 2 }}>
+                          <Avatar sx={{ bgcolor: "#2196f3", marginRight: 1 }}>
                             <AccountCircleIcon />
                           </Avatar>
                         )}
-                        <Typography variant="h6" component="div">
-                          {post.client_name}
-                        </Typography>
-                      </Box>
-                      {user && user.id === post.user_id && (
-                        <>
-                          <IconButton onClick={(event) => handleMenuClick(event, post)}>
-                            <MoreVertIcon />
-                          </IconButton>
-                          <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl) && selectedPost?.id === post.id}
-                            onClose={handleCloseMenu}
-                          >
-                            <MenuItem onClick={() => handleEdit(post)}>
-                              <EditIcon fontSize="small" sx={{ marginRight: 1 }} /> Edit
-                            </MenuItem>
-                            <MenuItem onClick={() => handleDelete(post.id)}>
-                              <DeleteIcon fontSize="small" sx={{ marginRight: 1 }} /> Delete
-                            </MenuItem>
-                          </Menu>
-                        </>
-                      )}
-                    </Box>
-
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>Event Name:</strong> {post.event_name}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>Theme Name:</strong> {post.theme_name}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>Location:</strong> {post.municipality_name}, {post.barangay_name}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>Date:</strong> {dayjs(post.date).format("MM/DD/YYYY")}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>Start Time:</strong> {dayjs(post.start_time, "HH:mm:ss").format("hh:mm A")}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>End Time:</strong> {dayjs(post.end_time, "HH:mm:ss").format("hh:mm A")}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>Audience:</strong> {post.audience}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>Performer Needed:</strong> {post.performer_needed}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>Description:</strong> {post.description}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      <strong>Categories:</strong> {post.talents.join(", ")}
-                    </Typography>
-
-                    {/* Comment Section */}
-                    {user.role === "performer" && (
-                      <Box sx={{ marginTop: 3 }}>
-                        <TextField
-                          fullWidth
-                          label="Add Comment"
-                          value={comments[post.id] || ""}
-                          onChange={(e) => handleCommentChange(post.id, e.target.value)}
-                          margin="normal"
-                        />
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleCommentSubmit(post.id)}
-                          disabled={loading}
-                        >
-                          Submit Comment
-                        </Button>
-                      </Box>
-                    )}
-                    <Box sx={{ marginTop: 3 }}>
-                      <Typography variant="h6">Comments:</Typography>
-                      <Box
-                        sx={{
-                          height: 200,
-                          overflowY: "auto",
-                          marginTop: 2,
-                          padding: 1,
-                          border: "1px solid #ccc",
-                          borderRadius: 1,
-                        }}
-                      >
-                        {post.comments && post.comments.length > 0 ? (
-                          post.comments.map((comment, index) => (
-                            <Box
-                              key={index}
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                marginBottom: 2,
-                                padding: 1,
-                                borderBottom: "1px solid #e0e0e0",
+                        <Box>
+                          <Typography variant="body2" color="textSecondary">
+                            <strong>
+                              {comment.user ? comment.user.name : "Unknown User"}
+                            </strong>
+                            <span
+                              style={{
+                                marginLeft: 8,
+                                fontStyle: "italic",
+                                fontSize: "0.9em",
                               }}
                             >
-                              {comment.user?.avatar ? (
-                                <Avatar src={comment.user.avatar} alt={comment.user.name} sx={{ marginRight: 1 }} />
-                              ) : (
-                                <Avatar sx={{ bgcolor: "#2196f3", marginRight: 1 }}>
-                                  <AccountCircleIcon />
-                                </Avatar>
-                              )}
-                              <Box>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>{comment.user ? comment.user.name : "Unknown User"}</strong>
-                                  <span style={{ marginLeft: 8, fontStyle: "italic", fontSize: "0.9em" }}>
-                                    {new Date(comment.created_at).toLocaleString()}
-                                  </span>
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                  {comment.content}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          ))
-                        ) : (
-                          <Typography variant="body2" color="textSecondary" sx={{ marginLeft: 2 }}>
-                            No comments yet.
+                              {new Date(comment.created_at).toLocaleString()}
+                            </span>
                           </Typography>
-                        )}
+                          <Typography variant="body2" color="textSecondary">
+                            {comment.content}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid>
-          ))
-        )}
+                    ))
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      sx={{ marginLeft: 2 }}
+                    >
+                      No comments yet.
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </motion.div>
       </Grid>
-    </div>
-  );
+    ))
+  )}
+</Grid>
+</div>
+</main>
+</div>
+);
 }
